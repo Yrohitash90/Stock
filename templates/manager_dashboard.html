@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Manager Dashboard</h3>
+
+<!-- Stock Table (Always Visible) -->
+<h5>Stock Table</h5>
+<table class="table table-bordered">
+    <tr>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Min Qty</th>
+        <th>Max Qty</th>
+        <th>Add Stock</th>
+    </tr>
+    {% for item in stock %}
+    <tr>
+        <td>{{ item.item_name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.min_quantity }}</td>
+        <td>{{ item.max_quantity }}</td>
+        <td>
+            <form method="POST" action="{{ url_for('add_stock') }}" class="d-flex">
+                <input type="hidden" name="item_name" value="{{ item.item_name }}">
+                <input type="number" name="quantity" style="width:60px" required>
+                <button class="btn btn-sm btn-success ms-1">Add</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<!-- Add New Item (Above Usage History) -->
+<h5>Add New Item</h5>
+<form method="POST" action="{{ url_for('add_item') }}" class="mb-3 row g-2">
+    <div class="col-md-4">
+        <input type="text" name="item_name" class="form-control" placeholder="Item Name" required>
+    </div>
+    <div class="col-md-2">
+        <input type="number" name="min_quantity" class="form-control" placeholder="Min Qty">
+    </div>
+    <div class="col-md-2">
+        <input type="number" name="max_quantity" class="form-control" placeholder="Max Qty">
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-success">Add Item</button>
+    </div>
+</form>
+
+<!-- Filter Usage History -->
+<h5>Usage History</h5>
+<form method="GET" action="{{ url_for('manager_dashboard') }}" class="row g-2 mb-3">
+    <div class="col-md-3">
+        <select name="user_role" class="form-select">
+            <option value="">All Users</option>
+            <option value="canteen" {% if filters.user_role=='canteen' %}selected{% endif %}>Canteen</option>
+            <option value="mess" {% if filters.user_role=='mess' %}selected{% endif %}>Mess</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <input type="date" name="from_date" class="form-control" value="{{ filters.from_date }}">
+    </div>
+    <div class="col-md-3">
+        <input type="date" name="to_date" class="form-control" value="{{ filters.to_date }}">
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-primary">Filter</button>
+    </div>
+</form>
+
+<!-- Usage Table -->
+<table class="table table-bordered">
+    <tr>
+        <th>User Role</th>
+        <th>Item</th>
+        <th>Quantity Used</th>
+        <th>Date Time</th>
+    </tr>
+    {% for u in usage %}
+    <tr>
+        <td>{{ u.user_role }}</td>
+        <td>{{ u.item_name }}</td>
+        <td>{{ u.quantity_used }}</td>
+        <td>{{ u.date_time }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
