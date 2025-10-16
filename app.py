@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-print("Hello  somil")
-
-#------------rohtash
-=======
->>>>>>> c6fb510f78a21620ed57b3119c357cb30c7fb1ca
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import mysql.connector
 import hashlib
@@ -11,7 +5,6 @@ from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
-
 # ---------------- MySQL Connection ----------------
 try:
     conn = mysql.connector.connect(
