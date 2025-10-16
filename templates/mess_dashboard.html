@@ -2,7 +2,7 @@
 {% block content %}
 <h3>Mess Dashboard</h3>
 
-<h5>Total Stock (Manager Inventory)</h5>
+<h4>Total Stock (Manager Inventory)</h4>
 <table class="table table-bordered">
     <tr>
         <th>Item</th>
@@ -28,7 +28,7 @@
     {% endfor %}
 </table>
 
-<h5>Your Usage History</h5>
+<h4>Your Usage History</h4>
 
 <!-- Date Filter -->
 <form method="GET" action="{{ url_for('mess_dashboard') }}" class="row g-2 mb-3 mt-2">
