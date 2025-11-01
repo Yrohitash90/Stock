@@ -9,6 +9,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light p-2">
     <a class="navbar-brand" href="#">Inventory System</a>
+    <a href="{{ url_for('change_password') }}" class="btn btn-warning btn-sm">Change Password</a>
     <div class="ms-auto">
         {% if session['username'] %}
             <span class="me-2">Hello, {{ session['username'] }}</span>

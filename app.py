@@ -56,6 +56,19 @@ def safe_commit():
     else:
         flash("Database unavailable. Changes not saved.", "warning")
 
+        # ---------------- Role-based access decorator ----------------
+def role_required(allowed_role):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            if session.get("role") != allowed_role:
+                flash("Unauthorized access!", "danger")
+                return redirect(url_for(f"{session.get('role')}_dashboard"))
+            return f(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
 # ---------------- Routes ----------------
 @app.route("/", methods=["GET","POST"])
 def login():
@@ -92,6 +105,7 @@ def login():
 # ---------------- Manager Dashboard ----------------
 @app.route("/manager_dashboard", methods=["GET","POST"])
 @login_required
+@role_required("manager")
 def manager_dashboard():
     stock_items = safe_query("SELECT * FROM stock")
 
@@ -186,6 +200,7 @@ def add_item():
 # ---------------- Mess Dashboard ----------------
 @app.route('/mess_dashboard')
 @login_required
+@role_required("mess")
 def mess_dashboard():
     from_date = request.args.get('from_date', '')
     to_date = request.args.get('to_date', '')
@@ -208,6 +223,7 @@ def mess_dashboard():
 # ---------------- Canteen Dashboard ----------------
 @app.route('/canteen_dashboard')
 @login_required
+@role_required("canteen")
 def canteen_dashboard():
     from_date = request.args.get('from_date', '')
     to_date = request.args.get('to_date', '')
@@ -237,6 +253,38 @@ def hello():
 def logout():
     session.clear()
     return redirect(url_for('login'))
+
+# ---------------- Change Password ----------------
+@app.route("/change_password", methods=["GET", "POST"])
+@login_required
+def change_password():
+    if request.method == "POST":
+        old_pwd = request.form["old_password"]
+        new_pwd = request.form["new_password"]
+        confirm_pwd = request.form["confirm_password"]
+
+        if new_pwd != confirm_pwd:
+            flash("New password and confirm password do not match!", "danger")
+            return redirect(url_for("change_password"))
+
+        username = session["username"]
+
+        # Old password check
+        cursor.execute("SELECT password FROM users WHERE username=%s", (username,))
+        user = cursor.fetchone()
+        if not user or hash_password(old_pwd) != user["password"]:
+            flash("Old password is incorrect!", "danger")
+            return redirect(url_for("change_password"))
+
+        # Update new password
+        hashed_new = hash_password(new_pwd)
+        cursor.execute("UPDATE users SET password=%s WHERE username=%s", (hashed_new, username))
+        safe_commit()
+        flash("Password changed successfully!", "success")
+        return redirect(url_for(f"{session['role']}_dashboard"))
+
+    return render_template("change_password.html")
+
 
 if __name__=="__main__":
     app.run(debug=True, port=5000)
