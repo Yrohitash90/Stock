@@ -71,6 +71,12 @@
       border-radius: 8px;
     }
 
+    .badge-status {
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 500;
+    }
   </style>
 </head>
 <body>
@@ -106,13 +112,14 @@
     <h3>📦 Manager Dashboard</h3>
     <hr>
     <h5>Stock Overview</h5>
-    <table class="table table-bordered">
+    <table class="table table-bordered align-middle">
       <thead>
         <tr>
           <th>Item</th>
           <th>Quantity</th>
           <th>Min Qty</th>
           <th>Max Qty</th>
+          <th>Status</th>
           <th>Add Stock</th>
         </tr>
       </thead>
@@ -123,6 +130,13 @@
           <td>{{ item.quantity }}</td>
           <td>{{ item.min_quantity }}</td>
           <td>{{ item.max_quantity }}</td>
+          <td>
+            {% if item.quantity <= item.min_quantity %}
+              <span class="badge bg-danger badge-status">🔴 Out of Stock</span>
+            {% else %}
+              <span class="badge bg-success badge-status">🟢 In Stock</span>
+            {% endif %}
+          </td>
           <td>
             <form method="POST" action="{{ url_for('add_stock') }}" class="d-flex justify-content-center">
               <input type="hidden" name="item_name" value="{{ item.item_name }}">
