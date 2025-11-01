@@ -10,7 +10,7 @@ try:
     conn = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="Somil@1234",
+        password="1234",
         database="canteen_inventory1",
         connection_timeout=5
     )
