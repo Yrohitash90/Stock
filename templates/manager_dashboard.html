@@ -108,6 +108,7 @@
     {% endif %}
   {% endwith %}
 
+  <!-- Stock Section -->
   <div class="section-card">
     <h3>📦 Manager Dashboard</h3>
     <hr>
@@ -120,6 +121,7 @@
           <th>Quantity</th>
           <th>Min Qty</th>
           <th>Max Qty</th>
+          <th>Use Type</th>
           <th>Status</th>
           <th>Add Stock</th>
         </tr>
@@ -132,8 +134,11 @@
           <td>{{ item.quantity }}</td>
           <td>{{ item.min_quantity }}</td>
           <td>{{ item.max_quantity }}</td>
+          <td>{{ item.use_type or 'both' }}</td>
           <td>
-            {% if item.quantity <= item.min_quantity %}
+            {% if item.quantity is none %}
+              <span class="badge bg-secondary badge-status">N/A</span>
+            {% elif item.quantity <= item.min_quantity %}
               <span class="badge bg-danger badge-status">🔴 Out of Stock</span>
             {% else %}
               <span class="badge bg-success badge-status">🟢 In Stock</span>
@@ -142,7 +147,7 @@
           <td>
             <form method="POST" action="{{ url_for('add_stock') }}" class="d-flex justify-content-center">
               <input type="hidden" name="item_name" value="{{ item.item_name }}">
-              <input type="number" name="quantity" class="form-control" style="width:80px;" required>
+              <input type="number" name="quantity" class="form-control" style="width:80px;" required min="1">
               <button class="btn btn-sm btn-success ms-2">Add</button>
             </form>
           </td>
@@ -152,17 +157,26 @@
     </table>
   </div>
 
+  <!-- Add New Item -->
   <div class="section-card">
     <h5>➕ Add New Item</h5>
     <form method="POST" action="{{ url_for('add_item') }}" class="row g-2 mt-2">
-      <div class="col-md-4">
+      <div class="col-md-3">
         <input type="text" name="item_name" class="form-control" placeholder="Item Name" required>
       </div>
       <div class="col-md-2">
-        <input type="number" name="min_quantity" class="form-control" placeholder="Min Qty">
+        <input type="number" name="min_quantity" class="form-control" placeholder="Min Qty" min="0">
       </div>
       <div class="col-md-2">
-        <input type="number" name="max_quantity" class="form-control" placeholder="Max Qty">
+        <input type="number" name="max_quantity" class="form-control" placeholder="Max Qty" min="0">
+      </div>
+      <div class="col-md-2">
+        <select name="use_type" class="form-select" required>
+          <option value="" disabled selected>Select Use Type</option>
+          <option value="mess">Mess</option>
+          <option value="canteen">Canteen</option>
+          <option value="both">Both</option>
+        </select>
       </div>
       <div class="col-md-2">
         <button class="btn btn-success w-100">Add Item</button>
@@ -170,6 +184,7 @@
     </form>
   </div>
 
+  <!-- Usage History -->
   <div class="section-card">
     <h5>📜 Usage History</h5>
     <form method="GET" action="{{ url_for('manager_dashboard') }}" class="row g-2 mb-3">
