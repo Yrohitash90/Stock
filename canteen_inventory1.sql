@@ -16,6 +16,32 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `order_history`
+--
+
+DROP TABLE IF EXISTS `order_history`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `order_history` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `item_name` varchar(255) NOT NULL,
+  `quantity_added` int NOT NULL,
+  `added_by` varchar(255) NOT NULL,
+  `date_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `order_history`
+--
+
+LOCK TABLES `order_history` WRITE;
+/*!40000 ALTER TABLE `order_history` DISABLE KEYS */;
+/*!40000 ALTER TABLE `order_history` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `stock`
 --
 
@@ -32,7 +58,7 @@ CREATE TABLE `stock` (
   `use_type` varchar(20) DEFAULT 'both',
   PRIMARY KEY (`item_id`),
   UNIQUE KEY `item_name` (`item_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +67,6 @@ CREATE TABLE `stock` (
 
 LOCK TABLES `stock` WRITE;
 /*!40000 ALTER TABLE `stock` DISABLE KEYS */;
-INSERT INTO `stock` VALUES (1,'mess1',80,10,90,'2025-11-01 18:23:37','mess'),(2,'both',90,34,46,'2025-11-01 18:24:07','both'),(3,'canteen',564,0,454,'2025-11-01 18:24:36','canteen');
 /*!40000 ALTER TABLE `stock` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -107,4 +132,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-01 23:56:34
+-- Dump completed on 2025-11-02 22:47:36
