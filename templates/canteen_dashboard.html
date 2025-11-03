@@ -105,10 +105,11 @@
   <div class="section-card">
     <h3>🥗 Canteen Dashboard</h3>
     <hr>
-    <h5>Stock Overview</h5>
+    <h5>Available Stock</h5>
     <table class="table table-bordered">
       <thead>
         <tr>
+          <th>Sr. No.</th>
           <th>Item</th>
           <th>Quantity</th>
           <th>Min Qty</th>
@@ -119,6 +120,7 @@
       <tbody>
         {% for item in stock %}
         <tr>
+          <td>{{ loop.index }}</td>
           <td>{{ item.item_name }}</td>
           <td>{{ item.quantity }}</td>
           <td>{{ item.min_quantity }}</td>
@@ -154,6 +156,7 @@
     <table class="table table-bordered">
       <thead>
         <tr>
+          <th>Sr. No.</th>
           <th>Item</th>
           <th>Quantity Used</th>
           <th>Date & Time</th>
@@ -163,6 +166,7 @@
         {% if usage %}
           {% for u in usage %}
           <tr>
+            <td>{{ loop.index }}</td>
             <td>{{ u.item_name }}</td>
             <td>{{ u.quantity_used }}</td>
             <td>{{ u.date_time }}</td>
@@ -170,7 +174,7 @@
           {% endfor %}
         {% else %}
           <tr>
-            <td colspan="3" class="text-center">No usage history found.</td>
+            <td colspan="4" class="text-center">No usage history found.</td>
           </tr>
         {% endif %}
       </tbody>
