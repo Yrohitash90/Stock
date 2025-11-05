@@ -2,55 +2,120 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Pending Orders | Inventory System</title>
+  <title>Pending Orders | RBMI Inventory Management System</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <style>
     body {
       background: linear-gradient(135deg, #cce5ff, #e8f4ff);
       font-family: "Poppins", sans-serif;
     }
+
+    /* Navbar same as dashboard */
     .navbar {
+      position: sticky;
+      top: 0;
+      width: 100%;
       background: linear-gradient(90deg, #007bff, #00c6ff);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
     }
-    .navbar .navbar-brand {
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
       color: #fff !important;
       font-weight: 600;
+      font-size: 1.1rem;
     }
+
+    .navbar-brand img {
+      height: 38px;
+      width: auto;
+      margin-right: 10px;
+      border-radius: 6px;
+      background: #fff;
+      padding: 3px 6px;
+    }
+
+    .navbar .btn {
+      font-weight: 500;
+      border-radius: 8px;
+    }
+
+    .navbar .btn-warning {
+      color: #000;
+    }
+
     .section-card {
       background: #fff;
       padding: 20px;
       border-radius: 16px;
       box-shadow: 0 3px 12px rgba(0, 114, 255, 0.12);
-      margin-top: 25px;
+      margin-bottom: 25px;
     }
+
+    h3, h5, h4 {
+      font-weight: 600;
+      color: #0d6efd;
+    }
+
+    .table {
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
     .table th {
       background: #007bff;
       color: #fff;
       text-align: center;
     }
+
     .table td {
       text-align: center;
       vertical-align: middle;
     }
+
     .btn-success {
+      border-radius: 8px;
+    }
+
+    .alert {
       border-radius: 8px;
     }
   </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg p-3">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="{{ url_for('manager_dashboard') }}">← Back to Dashboard</a>
-    <span class="text-white ms-auto">📦 Pending Stock Orders</span>
+<!-- Navbar same as dashboard -->
+<nav class="navbar">
+  <a class="navbar-brand" href="#">
+    <img src="{{ url_for('static', filename='images/rbmi_logo.png') }}" alt="RBMI Logo">
+    RBMI Inventory Management System
+  </a>
+
+  <div class="d-flex align-items-center">
+    <a href="{{ url_for('change_password') }}" class="btn btn-warning btn-sm me-2">Change Password</a>
+    <a href="{{ url_for('manager_dashboard') }}" class="btn btn-light btn-sm me-2">← Back to Dashboard</a>
+    {% if session['username'] %}
+      <span class="text-white me-3">👋 Hello, <strong>{{ session['username'] }}</strong></span>
+      <a href="{{ url_for('logout') }}" class="btn btn-sm btn-danger">Logout</a>
+    {% endif %}
   </div>
 </nav>
 
-<div class="container">
+<div class="container mt-4">
+
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       {% for category, message in messages %}
-        <div class="alert alert-{{ category }} mt-3 alert-dismissible fade show">
+        <div class="alert alert-{{ category }} alert-dismissible fade show">
           {{ message }}
           <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
@@ -58,16 +123,16 @@
     {% endif %}
   {% endwith %}
 
+  <!-- Pending Orders Section -->
   <div class="section-card">
     <h4>🕒 Pending Orders</h4>
+    <hr>
     <table class="table table-bordered mt-3">
       <thead>
         <tr>
           <th>Sr. No.</th>
           <th>Item Name</th>
           <th>Current Qty</th>
-          <th>Min Qty</th>
-          <th>Max Qty</th>
           <th>Required Qty</th>
           <th>Action</th>
         </tr>
@@ -79,8 +144,6 @@
             <td>{{ loop.index }}</td>
             <td>{{ p.item_name }}</td>
             <td>{{ p.current_qty }}</td>
-            <td>{{ p.min_qty }}</td>
-            <td>{{ p.max_qty }}</td>
             <td>{{ p.order_qty }}</td>
             <td>
               <form method="POST" action="{{ url_for('pending_orders_page') }}" class="d-flex justify-content-center">
@@ -96,9 +159,12 @@
         {% endif %}
       </tbody>
     </table>
+  </div>
 
-      <div class="section-card mt-5">
+  <!-- Order History Section -->
+  <div class="section-card">
     <h4>📜 Order History</h4>
+    <hr>
     <table class="table table-bordered mt-3">
       <thead>
         <tr>
@@ -125,8 +191,6 @@
         {% endif %}
       </tbody>
     </table>
-  </div>
-
   </div>
 </div>
 

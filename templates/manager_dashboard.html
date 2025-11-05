@@ -2,62 +2,107 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Manager Dashboard | Inventory System</title>
+  <title>Manager Dashboard | RBMI Inventory Management System</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <style>
     body {
       background: linear-gradient(135deg, #cce5ff, #e8f4ff);
       font-family: "Poppins", sans-serif;
+      scroll-behavior: smooth; /* for smooth scrolling */
     }
+
     .navbar {
+      position: sticky;
+      top: 0;
+      width: 100%;
       background: linear-gradient(90deg, #007bff, #00c6ff);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
     }
-    .navbar .navbar-brand {
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
       color: #fff !important;
       font-weight: 600;
+      font-size: 1.1rem;
     }
-    .navbar .btn-warning {
-      color: #000;
+
+    .navbar-brand img {
+      height: 38px;
+      width: auto;
+      margin-right: 10px;
+      border-radius: 6px;
+      background: #fff;
+      padding: 3px 6px;
+    }
+
+    .navbar .btn {
       font-weight: 500;
+      border-radius: 8px;
     }
-    .navbar .btn-danger {
-      font-weight: 500;
+
+    .icon-btn {
+      color: #fff;
+      font-size: 1.3rem;
+      margin-right: 15px;
+      transition: 0.3s;
+      cursor: pointer;
     }
+
+    .icon-btn:hover {
+      color: #f8f9fa;
+      transform: scale(1.15);
+    }
+
     .section-card {
       background: #fff;
       padding: 20px;
       border-radius: 16px;
-      box-shadow: 0 3px 12px  rgba(0, 114, 255, 0.12);
+      box-shadow: 0 3px 12px rgba(0, 114, 255, 0.12);
       margin-bottom: 25px;
     }
+
     h3, h5 {
       font-weight: 600;
       color: #0d6efd;
     }
+
     .table {
       background: #fff;
       border-radius: 10px;
       overflow: hidden;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
+
     .table th {
       background: #007bff;
       color: #fff;
       text-align: center;
     }
+
     .table td {
       text-align: center;
       vertical-align: middle;
     }
+
     .form-control, .form-select {
       border-radius: 8px;
     }
+
     .btn-success, .btn-primary {
       border-radius: 8px;
     }
+
     .alert {
       border-radius: 8px;
     }
+
     .badge-status {
       font-size: 0.9rem;
       padding: 6px 12px;
@@ -68,22 +113,29 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg p-3">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#"><i class="bi bi-box-seam"></i> Inventory System</a>
+<!-- Navbar -->
+<nav class="navbar">
+  <a class="navbar-brand" href="#">
+    <img src="{{ url_for('static', filename='images/rbmi_logo.png') }}" alt="RBMI Logo">
+    RBMI Inventory Management System
+  </a>
 
-    <a href="{{ url_for('change_password') }}" class="btn btn-warning btn-sm ms-3">Change Password</a>
-    <a href="{{ url_for('pending_orders_page') }}" class="btn btn-light btn-sm ms-3">Pending Orders</a>
+  <div class="d-flex align-items-center">
+    <!-- Icon Buttons -->
+    <i class="bi bi-plus-circle-fill icon-btn" title="Add New Item" onclick="scrollToSection('addItemSection')"></i>
+    <i class="bi bi-journal-text icon-btn" title="Usage History" onclick="scrollToSection('usageHistorySection')"></i>
 
-    <div class="ms-auto d-flex align-items-center">
-      {% if session['username'] %}
-        <span class="text-white me-3">👋 Hello, <strong>{{ session['username'] }}</strong></span>
-        <a href="{{ url_for('logout') }}" class="btn btn-sm btn-danger">Logout</a>
-      {% endif %}
-    </div>
+    <!-- Normal Buttons -->
+    <a href="{{ url_for('change_password') }}" class="btn btn-warning btn-sm me-2">Change Password</a>
+    <a href="{{ url_for('pending_orders_page') }}" class="btn btn-light btn-sm me-2">Pending Orders</a>
+    {% if session['username'] %}
+      <span class="text-white me-3">👋 Hello, <strong>{{ session['username'] }}</strong></span>
+      <a href="{{ url_for('logout') }}" class="btn btn-sm btn-danger">Logout</a>
+    {% endif %}
   </div>
 </nav>
 
+<!-- Dashboard Content -->
 <div class="container mt-4">
 
   {% with messages = get_flashed_messages(with_categories=true) %}
@@ -146,8 +198,8 @@
     </table>
   </div>
 
-  <!-- Add New Item -->
-  <div class="section-card">
+  <!-- Add New Item Section -->
+  <div class="section-card" id="addItemSection">
     <h5>➕ Add New Item</h5>
     <form method="POST" action="{{ url_for('add_item') }}" class="row g-2 mt-2">
       <div class="col-md-3">
@@ -173,8 +225,8 @@
     </form>
   </div>
 
-  <!-- Usage History -->
-  <div class="section-card">
+  <!-- Usage History Section -->
+  <div class="section-card" id="usageHistorySection">
     <h5>📜 Usage History</h5>
     <form method="GET" action="{{ url_for('manager_dashboard') }}" class="row g-2 mb-3">
       <div class="col-md-3">
@@ -219,6 +271,14 @@
     </table>
   </div>
 </div>
+
+<!-- Smooth Scroll Script -->
+<script>
+  function scrollToSection(id) {
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+  }
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
