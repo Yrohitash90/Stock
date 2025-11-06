@@ -273,6 +273,20 @@ def add_item():
         flash("Database unavailable. Cannot add item.", "warning")
     return redirect(url_for('manager_dashboard'))
 
+# ---------------- Delete Item ----------------
+@app.route("/delete_item", methods=["POST"])
+@login_required
+@role_required("manager")
+def delete_item():
+    item_name = request.form["item_name"]
+    try:
+        cursor.execute("DELETE FROM stock WHERE item_name=%s", (item_name,))
+        safe_commit()
+        flash(f"Item '{item_name}' deleted successfully!", "success")
+    except Exception as e:
+        flash(f"Failed to delete item: {e}", "danger")
+    return redirect(url_for("add_item_page"))
+
 
 # ---------------- Mess Dashboard ----------------
 @app.route('/mess_dashboard')
@@ -335,7 +349,9 @@ def logout():
 @login_required
 @role_required("manager")
 def add_item_page():
-    return render_template("add_item.html")
+    stock_items = safe_query("SELECT * FROM stock ORDER BY item_name")
+    return render_template("add_item.html", stock=stock_items)
+
 
 # ---------------- Usage History Page ----------------
 @app.route("/usage_history_page", methods=["GET"])

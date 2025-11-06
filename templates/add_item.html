@@ -122,6 +122,7 @@
 
   <div class="d-flex align-items-center">
     <!-- Icon Buttons -->
+     
      <a href="{{ url_for('add_item_page') }}">
   <i class="bi bi-plus-circle-fill icon-btn" title="Add New Item"></i>
 </a>
@@ -131,38 +132,65 @@
     <!-- Normal Buttons -->
     <a href="{{ url_for('change_password') }}" class="btn btn-warning btn-sm me-2">Change Password</a>
     <a href="{{ url_for('pending_orders_page') }}" class="btn btn-light btn-sm me-2">Pending Orders</a>
+      <a href="{{ url_for('manager_dashboard') }}" class="btn btn-light btn-sm me-2">Home</a>
     {% if session['username'] %}
       <span class="text-white me-3">👋 Hello, <strong>{{ session['username'] }}</strong></span>
       <a href="{{ url_for('logout') }}" class="btn btn-sm btn-danger">Logout</a>
     {% endif %}
   </div>
 </nav>
-  <!-- Add New Item Section -->
-  <div class="section-card" id="addItemSection">
-    <h5>➕ Add New Item</h5>
-    <form method="POST" action="{{ url_for('add_item') }}" class="row g-2 mt-2">
-      <div class="col-md-3">
-        <input type="text" name="item_name" class="form-control" placeholder="Item Name" required>
-      </div>
-      <div class="col-md-2">
-        <input type="number" name="min_quantity" class="form-control" placeholder="Min Qty" min="0">
-      </div>
-      <div class="col-md-2">
-        <input type="number" name="max_quantity" class="form-control" placeholder="Max Qty" min="0">
-      </div>
-      <div class="col-md-2">
-        <select name="use_type" class="form-select" required>
-          <option value="" disabled selected>Select Use Type</option>
-          <option value="mess">Mess</option>
-          <option value="canteen">Canteen</option>
-          <option value="both">Both</option>
-        </select>
-      </div>
-      <div class="col-md-2">
-        <button class="btn btn-success w-100">Add Item</button>
-      </div>
-    </form>
-  </div>
+<!-- Add / Delete Item Section -->
+<div class="section-card" id="addItemSection">
+  <h5>🧩 Manage Items</h5>
+
+  <!-- Add Item Form -->
+  <form method="POST" action="{{ url_for('add_item') }}" class="row g-2 mt-2">
+    <div class="col-md-3">
+      <input type="text" name="item_name" class="form-control" placeholder="Item Name" required>
+    </div>
+    <div class="col-md-2">
+      <input type="number" name="min_quantity" class="form-control" placeholder="Min Qty" min="0">
+    </div>
+    <div class="col-md-2">
+      <input type="number" name="max_quantity" class="form-control" placeholder="Max Qty" min="0">
+    </div>
+    <div class="col-md-2">
+      <select name="use_type" class="form-select" required>
+        <option value="" disabled selected>Select Use Type</option>
+        <option value="mess">Mess</option>
+        <option value="canteen">Canteen</option>
+        <option value="both">Both</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-success w-100">Add Item</button>
+    </div>
+  </form>
+
+  <hr>
+
+  <!-- Delete Item Form -->
+  <form method="POST" action="{{ url_for('delete_item') }}" onsubmit="return confirmDelete();" class="row g-2 mt-2">
+    <div class="col-md-6">
+      <select name="item_name" class="form-select" required>
+        <option value="" disabled selected>Select Item to Delete</option>
+        {% for item in stock %}
+          <option value="{{ item.item_name }}">{{ item.item_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-danger w-100">Delete Item</button>
+    </div>
+  </form>
+</div>
+
+<!-- Confirmation Script -->
+<script>
+function confirmDelete() {
+  return confirm("⚠️ Are you sure you want to delete this item?");
+}
+</script>
 
 
 <!-- Smooth Scroll Script -->
