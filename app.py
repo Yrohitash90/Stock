@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import mysql.connector
+import csv
+from io import StringIO
+from flask import Response
 import hashlib
 from functools import wraps
 
@@ -326,6 +329,80 @@ def canteen_dashboard():
 def logout():
     session.clear()
     return redirect(url_for('login'))
+
+# ---------------- Add Item Page ----------------
+@app.route("/add_item_page")
+@login_required
+@role_required("manager")
+def add_item_page():
+    return render_template("add_item.html")
+
+# ---------------- Usage History Page ----------------
+@app.route("/usage_history_page", methods=["GET"])
+@login_required
+@role_required("manager")
+def usage_history_page():
+    user_role = request.args.get('user_role', '')
+    from_date = request.args.get('from_date', '')
+    to_date = request.args.get('to_date', '')
+
+    query = "SELECT * FROM use_history WHERE 1=1"
+    params = []
+
+    if user_role:
+        query += " AND user_role=%s"
+        params.append(user_role)
+    if from_date:
+        query += " AND DATE(date_time) >= %s"
+        params.append(from_date)
+    if to_date:
+        query += " AND DATE(date_time) <= %s"
+        params.append(to_date)
+    query += " ORDER BY date_time DESC"
+
+    usage_data = safe_query(query, tuple(params))
+    filters = {'user_role': user_role, 'from_date': from_date, 'to_date': to_date}
+
+    return render_template("usage_history.html", usage=usage_data, filters=filters)
+
+@app.route("/export_usage_csv", methods=["GET"])
+@login_required
+@role_required("manager")
+def export_usage_csv():
+    user_role = request.args.get('user_role', '')
+    from_date = request.args.get('from_date', '')
+    to_date = request.args.get('to_date', '')
+
+    query = "SELECT * FROM use_history WHERE 1=1"
+    params = []
+
+    if user_role:
+        query += " AND user_role=%s"
+        params.append(user_role)
+    if from_date:
+        query += " AND DATE(date_time) >= %s"
+        params.append(from_date)
+    if to_date:
+        query += " AND DATE(date_time) <= %s"
+        params.append(to_date)
+    query += " ORDER BY date_time DESC"
+
+    usage_data = safe_query(query, tuple(params))
+
+    # CSV likhne ke liye memory buffer
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Sr. No", "User Role", "Item Name", "Quantity Used", "Date & Time"])
+
+    for i, row in enumerate(usage_data, start=1):
+        writer.writerow([i, row['user_role'], row['item_name'], row['quantity_used'], row['date_time']])
+
+    output.seek(0)
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=usage_history.csv"}
+    )
 
 
 # ---------------- Change Password ----------------

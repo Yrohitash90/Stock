@@ -121,13 +121,13 @@
   </a>
 
   <div class="d-flex align-items-center">
-    <a href="{{ url_for('add_item_page') }}">
+    <!-- Icon Buttons -->
+     <a href="{{ url_for('add_item_page') }}">
   <i class="bi bi-plus-circle-fill icon-btn" title="Add New Item"></i>
 </a>
 <a href="{{ url_for('usage_history_page') }}">
   <i class="bi bi-journal-text icon-btn" title="Usage History"></i>
 </a>
-
     <!-- Normal Buttons -->
     <a href="{{ url_for('change_password') }}" class="btn btn-warning btn-sm me-2">Change Password</a>
     <a href="{{ url_for('pending_orders_page') }}" class="btn btn-light btn-sm me-2">Pending Orders</a>
@@ -137,70 +137,6 @@
     {% endif %}
   </div>
 </nav>
-
-<!-- Dashboard Content -->
-<div class="container mt-4">
-
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-
-  <!-- Stock Section -->
-  <div class="section-card">
-    <h3>📦 Manager Dashboard</h3>
-    <hr>
-    <h5>Stock Overview</h5>
-    <table class="table table-bordered align-middle">
-      <thead>
-        <tr>
-          <th>Sr. No.</th>
-          <th>Item</th>
-          <th>Quantity</th>
-          <th>Min Qty</th>
-          <th>Max Qty</th>
-          <th>Use Type</th>
-          <th>Status</th>
-          <th>Add Stock</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for item in stock %}
-        <tr>
-          <td>{{ loop.index }}</td>
-          <td>{{ item.item_name }}</td>
-          <td>{{ item.quantity }}</td>
-          <td>{{ item.min_quantity }}</td>
-          <td>{{ item.max_quantity }}</td>
-          <td>{{ item.use_type or 'both' }}</td>
-          <td>
-            {% if item.quantity is none %}
-              <span class="badge bg-secondary badge-status">N/A</span>
-            {% elif item.quantity <= item.min_quantity %}
-              <span class="badge bg-danger badge-status">🔴 Out of Stock</span>
-            {% else %}
-              <span class="badge bg-success badge-status">🟢 In Stock</span>
-            {% endif %}
-          </td>
-          <td>
-            <form method="POST" action="{{ url_for('add_stock') }}" class="d-flex justify-content-center">
-              <input type="hidden" name="item_name" value="{{ item.item_name }}">
-              <input type="number" name="quantity" class="form-control" style="width:80px;" required min="1">
-              <button class="btn btn-sm btn-success ms-2">Add</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
   <!-- Add New Item Section -->
   <div class="section-card" id="addItemSection">
     <h5>➕ Add New Item</h5>
@@ -227,6 +163,10 @@
       </div>
     </form>
   </div>
+
+
+<!-- Smooth Scroll Script -->
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
