@@ -5,6 +5,8 @@ from io import StringIO
 from flask import Response
 import hashlib
 from functools import wraps
+from datetime import datetime
+
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
@@ -110,6 +112,43 @@ def login():
     return render_template("login.html")
 
 
+
+@app.route('/canteen_dashboard_new')
+@login_required
+@role_required('canteen')
+def canteen_dashboard_new():
+    cursor = conn.cursor(dictionary=True)
+    # Manager stock (canteen items)
+    manager_stock = safe_query("SELECT * FROM stock WHERE use_type IN ('canteen','both')")
+
+    # Canteen personal stock
+    personal_stock = safe_query("SELECT * FROM canteen_stock")
+
+    selected_date = request.args.get('selected_date')
+    if not selected_date:
+        selected_date = datetime.now().strftime("%Y-%m-%d")
+
+    # Canteen usage history
+    cursor.execute("""
+        SELECT item_name, quantity_used, date_time 
+        FROM canteen_use_history 
+        WHERE DATE(date_time)=%s
+        ORDER BY date_time DESC
+    """, (selected_date,))
+    usage = cursor.fetchall()
+
+    conn.commit()
+    cursor.close()
+    # Render template
+    return render_template(
+        'canteen_dashboard_new.html',
+        manager_stock=manager_stock,
+        personal_stock=personal_stock,
+        usage=usage,
+        filters={'selected_date': selected_date}  # optional: date filter placeholder
+    )
+
+
 # ---------------- Manager Dashboard ----------------
 @app.route("/manager_dashboard", methods=["GET","POST"])
 @login_required
@@ -203,32 +242,108 @@ def pending_orders_page():
 @app.route("/use_stock", methods=["POST"])
 @login_required
 def use_stock():
-    role = session['role']
     item_name = request.form['item_name']
     quantity = int(request.form['quantity'])
+    source = request.form.get('source', '')  # 'mess', 'canteen', 'manager'
+    personal_use = request.form.get('personal', '0')  # hidden field for manager HTML
 
-    manager_stock = safe_query("SELECT quantity FROM stock WHERE item_name=%s", (item_name,))
-    if manager_stock:
-        manager_stock = manager_stock[0]['quantity']
-        if quantity > manager_stock:
-            flash("Not enough stock in manager inventory", "danger")
-        else:
-            if cursor:
-                try:
-                    cursor.execute("UPDATE stock SET quantity=quantity-%s WHERE item_name=%s", (quantity, item_name))
-                    cursor.execute("INSERT INTO use_history (user_role, item_name, quantity_used) VALUES (%s,%s,%s)",
-                                   (role, item_name, quantity))
-                    safe_commit()
-                    flash(f"{quantity} units of {item_name} used successfully", "success")
-                except Exception as e:
-                    flash(f"Use stock failed: {e}", "danger")
+    if quantity <= 0:
+        flash("Quantity must be at least 1!", "warning")
+        return redirect(request.referrer)
+
+    try:
+        # ------------------- CANTEEN PERSONAL STOCK -------------------
+        if source == 'canteen':
+            cursor.execute("SELECT quantity FROM canteen_stock WHERE item_name=%s", (item_name,))
+            existing = cursor.fetchone()
+
+            if not existing:
+                flash(f"{item_name} not in personal stock! Cannot use.", "danger")
+                return redirect(url_for('canteen_dashboard_new'))
+            if existing['quantity'] < quantity:
+                flash(f"Not enough personal stock for {item_name}!", "danger")
+                return redirect(url_for('canteen_dashboard_new'))
+
+            cursor.execute(
+                "UPDATE canteen_stock SET quantity = quantity - %s, last_updated=NOW() WHERE item_name=%s",
+                (quantity, item_name)
+            )
+            # Log in canteen usage history
+            cursor.execute(
+                "INSERT INTO canteen_use_history (item_name, quantity_used) VALUES (%s, %s)",
+                (item_name, quantity)
+            )
+            safe_commit()
+            flash(f"{quantity} units of {item_name} used from personal stock.", "success")
+            return redirect(url_for('canteen_dashboard_new'))
+
+        # ------------------- MANAGER STOCK -------------------
+        elif source == 'manager':
+            cursor.execute("SELECT quantity FROM stock WHERE item_name=%s", (item_name,))
+            stock = cursor.fetchone()
+            if not stock or stock['quantity'] < quantity:
+                flash(f"Not enough manager stock for {item_name}!", "danger")
+                return redirect(request.referrer)
+
+            # Deduct from manager stock
+            cursor.execute("UPDATE stock SET quantity = quantity - %s WHERE item_name=%s", (quantity, item_name))
+
+            if personal_use == '1':
+                # Add to canteen personal stock
+                cursor.execute("SELECT quantity FROM canteen_stock WHERE item_name=%s", (item_name,))
+                personal = cursor.fetchone()
+                if personal:
+                    cursor.execute(
+                        "UPDATE canteen_stock SET quantity = quantity + %s, last_updated=NOW() WHERE item_name=%s",
+                        (quantity, item_name)
+                    )
+                else:
+                    cursor.execute(
+                        "INSERT INTO canteen_stock (item_name, quantity, last_updated) VALUES (%s, %s, NOW())",
+                        (item_name, quantity)
+                    )
+                # Log in canteen_use_history
+                cursor.execute(
+                    "INSERT INTO use_history (user_role, item_name, quantity_used) VALUES (%s, %s, %s)",
+                    ('canteen', item_name, quantity)
+                )
+                flash(f"{quantity} units of {item_name} moved to personal stock and logged in canteen usage.", "success")
             else:
-                flash("Database unavailable. Cannot use stock.", "warning")
-    else:
-        flash("Item not found or DB unavailable", "warning")
+                # Normal manager usage → log in use_history
+                cursor.execute(
+                    "INSERT INTO use_history (user_role, item_name, quantity_used) VALUES (%s, %s, %s)",
+                    ('canteen', item_name, quantity)
+                )
+                flash(f"{quantity} units of {item_name} used from manager stock.", "success")
 
-    return redirect(url_for(f'{role}_dashboard'))
+            safe_commit()
+            return redirect(url_for('canteen_dashboard'))
 
+        # ------------------- MESS STOCK -------------------
+        elif source == 'mess':
+            cursor.execute("SELECT quantity FROM stock WHERE item_name=%s", (item_name,))
+            mess_stock = cursor.fetchone()
+
+            if not mess_stock or mess_stock['quantity'] < quantity:
+                flash(f"Not enough stock for {item_name}!", "danger")
+                return redirect(url_for('mess_dashboard'))
+
+            cursor.execute("UPDATE stock SET quantity = quantity - %s WHERE item_name=%s", (quantity, item_name))
+            cursor.execute(
+                "INSERT INTO use_history (user_role, item_name, quantity_used) VALUES (%s, %s, %s)",
+                ('mess', item_name, quantity)
+            )
+            safe_commit()
+            flash(f"{quantity} units of {item_name} used for mess.", "success")
+            return redirect(url_for('mess_dashboard'))
+
+        else:
+            flash("Invalid source specified!", "danger")
+            return redirect(request.referrer)
+
+    except Exception as e:
+        flash(f"Error using stock: {e}", "danger")
+        return redirect(request.referrer)
 
 # ---------------- Add Stock ----------------
 @app.route("/add_stock", methods=["POST"])
@@ -258,25 +373,30 @@ def add_stock():
 @login_required
 def add_item():
     item_name = request.form['item_name']
-    min_qty = int(request.form.get('min_quantity',0))
-    max_qty = int(request.form.get('max_quantity',100))
+    min_qty = int(request.form.get('min_quantity', 0))
+    max_qty = int(request.form.get('max_quantity', 100))
     use_type = request.form.get('use_type', 'both')
+
     if cursor:
         try:
-            cursor.execute("INSERT INTO stock (item_name, min_quantity, max_quantity, quantity, use_type) VALUES (%s,%s,%s,0,%s)",
-                           (item_name, min_qty, max_qty, use_type))
+            cursor.execute(
+                "INSERT INTO stock (item_name, min_quantity, max_quantity, quantity, use_type) VALUES (%s,%s,%s,0,%s)",
+                (item_name, min_qty, max_qty, use_type)
+            )
             safe_commit()
-            flash(f"Item {item_name} added for {use_type} use","success")
+            flash(f"Item '{item_name}' added for {use_type} use", "success")
         except Exception as e:
             flash(f"Add item failed: {e}", "danger")
     else:
         flash("Database unavailable. Cannot add item.", "warning")
-    return redirect(url_for('manager_dashboard'))
+
+    # Always redirect to Manage Items page
+    return redirect(url_for('add_item_page'))
+
 
 # ---------------- Delete Item ----------------
 @app.route("/delete_item", methods=["POST"])
 @login_required
-@role_required("manager")
 def delete_item():
     item_name = request.form["item_name"]
     try:
@@ -285,32 +405,44 @@ def delete_item():
         flash(f"Item '{item_name}' deleted successfully!", "success")
     except Exception as e:
         flash(f"Failed to delete item: {e}", "danger")
-    return redirect(url_for("add_item_page"))
 
+    # Always redirect to Manage Items page
+    return redirect(url_for('add_item_page'))
 
 # ---------------- Mess Dashboard ----------------
-@app.route('/mess_dashboard')
+@app.route('/mess_dashboard', methods=['GET', 'POST'])
 @login_required
-@role_required("mess")
 def mess_dashboard():
-    from_date = request.args.get('from_date', '')
-    to_date = request.args.get('to_date', '')
+    cursor = conn.cursor(dictionary=True)
 
-    stock_items = safe_query("SELECT * FROM stock WHERE use_type IN ('mess', 'both')")
+    # ✅ Mess & Both type items for stock display
+    cursor.execute("SELECT * FROM stock WHERE use_type IN ('mess', 'both') AND quantity > 0")
+    stock = cursor.fetchall()
 
-    query = "SELECT * FROM use_history WHERE user_role='mess'"
-    params = []
-    if from_date:
-        query += " AND DATE(date_time) >= %s"
-        params.append(from_date)
-    if to_date:
-        query += " AND DATE(date_time) <= %s"
-        params.append(to_date)
-    query += " ORDER BY date_time DESC"
-    usage = safe_query(query, tuple(params))
-    filters = {'from_date': from_date, 'to_date': to_date}
+    # ✅ Default selected date = today
+    selected_date = request.args.get('selected_date')
+    if not selected_date:
+        selected_date = datetime.now().strftime("%Y-%m-%d")
 
-    return render_template('mess_dashboard.html', stock=stock_items, usage=usage, filters=filters)
+    # ✅ Fetch today's (or selected day's) usage
+    cursor.execute("""
+        SELECT item_name, quantity_used, date_time 
+        FROM use_history 
+        WHERE user_role='mess' AND DATE(date_time)=%s
+        ORDER BY date_time DESC
+    """, (selected_date,))
+    usage = cursor.fetchall()
+
+    conn.commit()
+    cursor.close()
+
+    return render_template(
+        'mess_dashboard.html',
+        stock=stock,
+        usage=usage,
+        filters={'selected_date': selected_date}
+    )
+
 
 
 # ---------------- Canteen Dashboard ----------------
@@ -347,7 +479,6 @@ def logout():
 # ---------------- Add Item Page ----------------
 @app.route("/add_item_page")
 @login_required
-@role_required("manager")
 def add_item_page():
     stock_items = safe_query("SELECT * FROM stock ORDER BY item_name")
     return render_template("add_item.html", stock=stock_items)

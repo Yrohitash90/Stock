@@ -5,139 +5,146 @@
   <title>Mess Dashboard | RBMI Inventory System</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-  <style>
-    body {
-      background: linear-gradient(135deg, #cce5ff, #e8f4ff);
-      font-family: "Poppins", sans-serif;
-      overflow-x: hidden;
-    }
+<style>
+body {
+  background: linear-gradient(135deg, #cce5ff, #e8f4ff);
+  font-family: "Poppins", sans-serif;
+  overflow-x: hidden;
+}
 
-    /* Sidebar */
-    .sidebar {
-      width: 250px;
-      background: linear-gradient(180deg, #007bff, #00c6ff);
-      color: white;
-      padding-top: 20px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100vh;
-      box-shadow: 2px 0 10px rgba(0,0,0,0.15);
-    }
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background: linear-gradient(180deg, #007bff, #00c6ff);
+  color: white;
+  padding-top: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.15);
+}
 
-    .sidebar .brand {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+.sidebar .brand {
+  text-align: center;
+  margin-bottom: 25px;
+}
 
-    .sidebar .brand img {
-      height: 45px;
-      width: auto;
-      border-radius: 6px;
-      background: #fff;
-      padding: 3px 6px;
-      margin-bottom: 5px;
-    }
+.sidebar .brand img {
+  height: 55px;
+  width: auto;
+  border-radius: 8px;
+  background: #fff;
+  padding: 5px 8px;
+  margin-bottom: 8px;
+}
 
-    .sidebar .nav-link {
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 4px 12px;
-      transition: all 0.3s ease;
-    }
+.sidebar .brand h5 {
+  font-weight: 600;
+  font-size: 16px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 5px 10px;
+  border-radius: 8px;
+  display: inline-block;
+}
 
-    .sidebar .nav-link:hover,
-    .sidebar .nav-link.active {
-      background: rgba(255,255,255,0.2);
-      text-decoration: none;
-      transform: translateX(4px);
-    }
+.sidebar .nav-link {
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 12px;
+  transition: all 0.3s ease;
+}
 
-    .main-content {
-      margin-left: 260px;
-      padding: 20px;
-    }
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  background: rgba(255,255,255,0.2);
+  text-decoration: none;
+  transform: translateX(4px);
+}
 
-    h3, h5 {
-      font-weight: 600;
-      color: #0d6efd;
-    }
+/* Main Content */
+.main-content {
+  margin-left: 260px;
+  padding: 20px;
+}
 
-    .section-card {
-      background: #fff;
-      padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 3px 12px rgba(0, 114, 255, 0.12);
-      margin-bottom: 25px;
-    }
+h3, h5 {
+  font-weight: 600;
+  color: #0d6efd;
+}
 
-    .table {
-      background: #fff;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
+.section-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 3px 12px rgba(0, 114, 255, 0.12);
+  margin-bottom: 25px;
+}
 
-    .table th {
-      background: #007bff;
-      color: #fff;
-      text-align: center;
-    }
+.table {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
 
-    .table td {
-      text-align: center;
-      vertical-align: middle;
-    }
+.table th {
+  background: #007bff;
+  color: #fff;
+  text-align: center;
+}
 
-    .form-control, .form-select {
-      border-radius: 8px;
-    }
+.table td {
+  text-align: center;
+  vertical-align: middle;
+}
 
-    .btn-success, .btn-primary {
-      border-radius: 8px;
-    }
+.form-control, .form-select {
+  border-radius: 8px;
+}
 
-    .topbar {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      background: #ffffff;
-      padding: 10px 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      margin-bottom: 20px;
-    }
+.btn-success, .btn-primary {
+  border-radius: 8px;
+}
 
-    /* Split Layout */
-    .dashboard-row {
-      display: flex;
-      flex-wrap: nowrap;
-      gap: 20px;
-    }
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 10px 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+}
 
-    .stock-section {
-      flex: 2;
-    }
+.dashboard-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 20px;
+}
 
-    .consumption-section {
-      flex: 1;
-      max-width: 35%;
-    }
+.personal-stock-section, .consumption-section {
+  flex: 1;
+  max-width: 50%;
+}
 
-    @media (max-width: 992px) {
-      .dashboard-row {
-        flex-direction: column;
-      }
-      .consumption-section {
-        max-width: 100%;
-      }
-    }
-  </style>
+@media (max-width: 992px) {
+  .dashboard-row {
+    flex-direction: column;
+  }
+  .personal-stock-section, .consumption-section {
+    max-width: 100%;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -145,15 +152,19 @@
   <div class="sidebar">
     <div class="brand">
       <img src="{{ url_for('static', filename='images/rbmi_logo.png') }}" alt="RBMI Logo">
-      <h5>RBMI Inventory</h5>
+      <h5>RBMI Inventory Management System</h5>
     </div>
     <hr style="border-color: rgba(255,255,255,0.3)">
-    <a class="nav-link" href="{{ url_for('manager_dashboard') }}">
-      <i class="bi bi-speedometer2"></i> Manager Dashboard
+    <a class="nav-link" href="{{ url_for('canteen_dashboard') }}">
+      <i class="bi bi-shop"></i> Stock Dashboard
     </a>
-    <a class="nav-link active" href="{{ url_for('mess_dashboard') }}">
-      <i class="bi bi-egg-fried"></i> Mess Dashboard
+    <a class="nav-link active" href="{{ url_for('canteen_dashboard_new') }}">
+  <i class="bi bi-grid-1x2"></i> Canteen Dashboard
+</a>
+     <a class="nav-link" href="{{ url_for('add_item_page') }}">
+      <i class="bi bi-plus-circle-fill"></i> Add Item
     </a>
+
     <a class="nav-link" href="{{ url_for('change_password') }}">
       <i class="bi bi-key"></i> Change Password
     </a>
@@ -164,15 +175,14 @@
 
   <!-- Main Content -->
   <div class="main-content">
-
     <div class="topbar d-flex justify-content-between align-items-center">
-  <h5 class="m-0 text-primary fw-bold">RBMI Inventory Management System</h5>
-  <div>
-    {% if session['username'] %}
-      <span class="me-3">👋 Hello, <strong>{{ session['username'] }}</strong></span>
-    {% endif %}
-  </div>
-</div>
+      <h5 class="m-0 text-primary fw-bold">RBMI Inventory Management System</h5>
+      <div>
+        {% if session['username'] %}
+          <span class="me-3">👋 Hello, <strong>{{ session['username'] }}</strong></span>
+        {% endif %}
+      </div>
+    </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -186,10 +196,9 @@
     {% endwith %}
 
     <div class="dashboard-row">
-      <!-- Stock Section -->
-      <div class="section-card stock-section">
-        <h3>🍽️ Available Stock</h3>
-        <hr>
+      <!-- Personal Stock Section -->
+      <div class="section-card personal-stock-section">
+        <h5>🛒 Personal Stock</h5>
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -200,7 +209,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for item in stock %}
+            {% for item in personal_stock %}
             <tr>
               <td>{{ loop.index }}</td>
               <td>{{ item.item_name }}</td>
@@ -209,10 +218,14 @@
                 <form method="POST" action="{{ url_for('use_stock') }}" class="d-flex justify-content-center">
                   <input type="hidden" name="item_name" value="{{ item.item_name }}">
                   <input type="number" name="quantity" class="form-control" style="width:80px;" required min="1">
-                  <input type="hidden" name="source" value="mess">
+                  <input type="hidden" name="source" value="canteen">
                   <button class="btn btn-sm btn-primary ms-2">Use</button>
                 </form>
               </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="3" class="text-center">No personal stock allocated yet.</td>
             </tr>
             {% endfor %}
           </tbody>
@@ -246,7 +259,7 @@
                 {% endfor %}
               {% else %}
                 <tr>
-                  <td colspan="3" class="text-center">No consumption for this day.</td>
+                  <td colspan="3" class="text-center">No consumption recorded.</td>
                 </tr>
               {% endif %}
             </tbody>
