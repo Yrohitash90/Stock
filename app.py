@@ -71,7 +71,6 @@ def role_required(allowed_role):
         @wraps(f)
         def wrapper(*args, **kwargs):
             if session.get("role") != allowed_role:
-                flash("Unauthorized access!", "danger")
                 return redirect(url_for(f"{session.get('role')}_dashboard"))
             return f(*args, **kwargs)
         return wrapper
@@ -391,7 +390,7 @@ def add_item():
         flash("Database unavailable. Cannot add item.", "warning")
 
     # Always redirect to Manage Items page
-    return redirect(url_for('add_item_page'))
+    return redirect(url_for('manager_dashboard'))
 
 
 # ---------------- Delete Item ----------------
