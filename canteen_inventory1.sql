@@ -16,6 +16,56 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `canteen_stock`
+--
+
+DROP TABLE IF EXISTS `canteen_stock`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `canteen_stock` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `item_name` varchar(100) DEFAULT NULL,
+  `quantity` int DEFAULT NULL,
+  `last_updated` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `canteen_stock`
+--
+
+LOCK TABLES `canteen_stock` WRITE;
+/*!40000 ALTER TABLE `canteen_stock` DISABLE KEYS */;
+/*!40000 ALTER TABLE `canteen_stock` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `canteen_use_history`
+--
+
+DROP TABLE IF EXISTS `canteen_use_history`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `canteen_use_history` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `item_name` varchar(100) DEFAULT NULL,
+  `quantity_used` int DEFAULT NULL,
+  `date_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `canteen_use_history`
+--
+
+LOCK TABLES `canteen_use_history` WRITE;
+/*!40000 ALTER TABLE `canteen_use_history` DISABLE KEYS */;
+/*!40000 ALTER TABLE `canteen_use_history` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `order_history`
 --
 
@@ -119,7 +169,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'manager','03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4','manager'),(2,'canteen','03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4','canteen'),(3,'mess','03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4','mess');
+INSERT INTO `users` VALUES (1,'manager','5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5','manager'),(2,'canteen','03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4','canteen'),(3,'mess','03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4','mess');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -132,4 +182,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-05 19:19:31
+-- Dump completed on 2025-11-08  1:06:29
