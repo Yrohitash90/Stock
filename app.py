@@ -389,7 +389,7 @@ def add_item():
         flash("Database unavailable. Cannot add item.", "warning")
 
     # Always redirect to Manage Items page
-    return redirect(url_for('manager_dashboard'))
+    return redirect(url_for('add_item_page'))
 
 
 # ---------------- Delete Item ----------------
@@ -581,4 +581,4 @@ def change_password():
 
 
 if __name__=="__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=False,host='0.0.0.0')
