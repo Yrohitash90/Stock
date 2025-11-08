@@ -14,10 +14,10 @@ app.secret_key = "supersecretkey"
 # ---------------- MySQL Connection ----------------
 try:
     conn = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="Somil@1234",
-        database="canteen_inventory1",
+        host="sql5.freesqldatabase.com",
+        user="sql5806713",
+        password="KNWYDPg3Jv",
+        database="sql5806713",
         connection_timeout=5
     )
     cursor = conn.cursor(dictionary=True)
