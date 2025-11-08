@@ -18,7 +18,7 @@ try:
         user="sql5806713",
         password="KNWYDPg3Jv",
         database="sql5806713",
-        connection_timeout=5
+        connection_timeout=20
     )
     cursor = conn.cursor(dictionary=True)
     print("Database connected successfully!")
