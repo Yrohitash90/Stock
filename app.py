@@ -410,6 +410,7 @@ def delete_item():
 # ---------------- Mess Dashboard ----------------
 @app.route('/mess_dashboard', methods=['GET', 'POST'])
 @login_required
+@role_required("manager")
 def mess_dashboard():
     cursor = conn.cursor(dictionary=True)
 
