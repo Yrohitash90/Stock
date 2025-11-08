@@ -114,7 +114,6 @@ def login():
 
 @app.route('/canteen_dashboard_new')
 @login_required
-@role_required('canteen')
 def canteen_dashboard_new():
     cursor = conn.cursor(dictionary=True)
     # Manager stock (canteen items)

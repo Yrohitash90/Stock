@@ -12,61 +12,61 @@ body {
   overflow-x: hidden;
 }
 
-/* Sidebar */
-.sidebar {
-  width: 250px;
-  background: linear-gradient(180deg, #007bff, #00c6ff);
-  color: white;
-  padding-top: 20px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.15);
-}
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background: linear-gradient(180deg, #007bff, #00c6ff);
+      color: white;
+      padding-top: 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.15);
+    }
 
-.sidebar .brand {
-  text-align: center;
-  margin-bottom: 25px;
-}
+    .sidebar .brand {
+      text-align: center;
+      margin-bottom: 25px;
+    }
 
-.sidebar .brand img {
-  height: 55px;
-  width: auto;
-  border-radius: 8px;
-  background: #fff;
-  padding: 5px 8px;
-  margin-bottom: 8px;
-}
+    .sidebar .brand img {
+      height: 55px;
+      width: auto;
+      border-radius: 8px;
+      background: #fff;
+      padding: 5px 8px;
+      margin-bottom: 8px;
+    }
 
-.sidebar .brand h5 {
-  font-weight: 600;
-  font-size: 16px;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.15);
-  padding: 5px 10px;
-  border-radius: 8px;
-  display: inline-block;
-}
+    .sidebar .brand h5 {
+      font-weight: 600;
+      font-size: 16px;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 5px 10px;
+      border-radius: 8px;
+      display: inline-block;
+    }
 
-.sidebar .nav-link {
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 4px 12px;
-  transition: all 0.3s ease;
-}
+    .sidebar .nav-link {
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 4px 12px;
+      transition: all 0.3s ease;
+    }
 
-.sidebar .nav-link:hover,
-.sidebar .nav-link.active {
-  background: rgba(255,255,255,0.2);
-  text-decoration: none;
-  transform: translateX(4px);
-}
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      background: rgba(255,255,255,0.2);
+      text-decoration: none;
+      transform: translateX(4px);
+    }
 
 /* Main Content */
 .main-content {
@@ -148,21 +148,22 @@ h3, h5 {
 </head>
 <body>
 
-  <!-- Sidebar -->
+ <!-- Sidebar -->
   <div class="sidebar">
     <div class="brand">
       <img src="{{ url_for('static', filename='images/rbmi_logo.png') }}" alt="RBMI Logo">
-      <h5>RBMI Inventory Management System</h5>
+      <h5>RBMI Inventory<br>Management System</h5>
     </div>
     <hr style="border-color: rgba(255,255,255,0.3)">
+    {% if session['role'] == 'canteen' %}
     <a class="nav-link" href="{{ url_for('canteen_dashboard') }}">
-      <i class="bi bi-shop"></i> Stock Dashboard
+      <i class="bi bi-shop"></i> Manager Dashboard
     </a>
     <a class="nav-link active" href="{{ url_for('canteen_dashboard_new') }}">
   <i class="bi bi-grid-1x2"></i> Canteen Dashboard
 </a>
      <a class="nav-link" href="{{ url_for('add_item_page') }}">
-      <i class="bi bi-plus-circle-fill"></i> Add Item
+      <i class="bi bi-plus-circle-fill"></i> Manage Item
     </a>
 
     <a class="nav-link" href="{{ url_for('change_password') }}">
@@ -171,6 +172,32 @@ h3, h5 {
     <a class="nav-link text-danger" href="{{ url_for('logout') }}">
       <i class="bi bi-box-arrow-right"></i> Logout
     </a>
+    {% elif session['role'] == 'manager' %}
+    <a class="nav-link" href="{{ url_for('manager_dashboard') }}">
+      <i class="bi bi-speedometer2"></i> Manager Dashboard
+    </a>
+    <a class="nav-link" href="{{ url_for('mess_dashboard') }}">
+      <i class="bi bi-egg-fried"></i> Mess Dashboard
+    </a>
+    <a class="nav-link active" href="{{ url_for('canteen_dashboard_new') }}">
+  <i class="bi bi-grid-1x2"></i> Canteen Dashboard
+</a>
+    <a class="nav-link" href="{{ url_for('add_item_page') }}">
+      <i class="bi bi-plus-circle-fill"></i> Manage Item
+    </a>
+    <a class="nav-link" href="{{ url_for('usage_history_page') }}">
+      <i class="bi bi-journal-text"></i> Usage Report
+    </a>
+    <a class="nav-link" href="{{ url_for('pending_orders_page') }}">
+      <i class="bi bi-hourglass-split"></i> Pending Orders
+    </a>
+    <a class="nav-link" href="{{ url_for('change_password') }}">
+      <i class="bi bi-key"></i> Change Password
+    </a>
+    <a class="nav-link text-danger" href="{{ url_for('logout') }}">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </a>
+    {% endif %}
   </div>
 
   <!-- Main Content -->
@@ -205,7 +232,6 @@ h3, h5 {
               <th>Sr. No.</th>
               <th>Item</th>
               <th>Quantity (units)</th>
-              <th>Use Item</th>
             </tr>
           </thead>
           <tbody>
@@ -214,6 +240,7 @@ h3, h5 {
               <td>{{ loop.index }}</td>
               <td>{{ item.item_name }}</td>
               <td>{{ item.quantity }}</td>
+              {% if session['role'] == 'canteen' %}
               <td>
                 <form method="POST" action="{{ url_for('use_stock') }}" class="d-flex justify-content-center">
                   <input type="hidden" name="item_name" value="{{ item.item_name }}">
@@ -222,6 +249,7 @@ h3, h5 {
                   <button class="btn btn-sm btn-primary ms-2">Use</button>
                 </form>
               </td>
+              {% endif %}
             </tr>
             {% else %}
             <tr>

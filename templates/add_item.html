@@ -126,6 +126,9 @@
       <a class="nav-link" href="{{ url_for('mess_dashboard') }}">
         <i class="bi bi-egg-fried"></i> Mess Dashboard
       </a>
+      <a class="nav-link" href="{{ url_for('canteen_dashboard_new') }}">
+  <i class="bi bi-grid-1x2"></i> Canteen Dashboard
+</a>
       <a class="nav-link active" href="{{ url_for('add_item_page') }}">
         <i class="bi bi-plus-circle-fill"></i> Manage Items
       </a>
@@ -137,10 +140,10 @@
       </a>
     {% elif session['role'] == 'canteen' %}
       <a class="nav-link" href="{{ url_for('canteen_dashboard') }}">
-      <i class="bi bi-shop"></i> Stock Dashboard
+      <i class="bi bi-shop"></i> Manager Dashboard
     </a>
     <a class="nav-link" href="{{ url_for('canteen_dashboard_new') }}">
-  <i class="bi bi-grid-1x2"></i> Canteen Dashboard New
+  <i class="bi bi-grid-1x2"></i> Canteen Dashboard
 </a>
       <a class="nav-link active" href="{{ url_for('add_item_page') }}">
         <i class="bi bi-plus-circle-fill"></i> Manage Items
