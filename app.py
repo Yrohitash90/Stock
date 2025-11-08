@@ -22,6 +22,8 @@ try:
         user="root",
         password="Somil@1234",
         database="canteen_inventory1",
+        auth_plugin='mysql_native_password',   # <- explicitly set plugin
+        use_pure=True,
         connection_timeout=20
     )
     cursor = conn.cursor(dictionary=True)
