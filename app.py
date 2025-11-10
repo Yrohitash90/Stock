@@ -18,9 +18,9 @@ app.secret_key = "supersecretkey"
 # ---------------- MySQL Connection ----------------
 try:
     conn = mysql.connector.connect(
-        host="database-1.c6x28gggmjwz.us-east-1.rds.amazonaws.com",
+        host="mydb-india.c5mmu4oakvas.ap-south-1.rds.amazonaws.com",
         user="admin",
-        password="GJ7WOu5iaHRMKrArcpZN",
+        password="38093809Rr",
         database="canteen_inventory1",
         auth_plugin='mysql_native_password',   # <- explicitly set plugin
         use_pure=True,
