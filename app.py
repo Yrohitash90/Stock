@@ -24,7 +24,7 @@ try:
         database="canteen_inventory1",
         auth_plugin='mysql_native_password',   # <- explicitly set plugin
         use_pure=True,
-        connection_timeout=20
+        connection_timeout=5
     )
     cursor = conn.cursor(dictionary=True)
     print("Database connected successfully!")
