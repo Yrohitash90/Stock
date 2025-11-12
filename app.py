@@ -10,28 +10,50 @@ import threading
 import webview
 from flask import Flask, render_template
 import time
+from mysql.connector import Error
 
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
 
-# ---------------- MySQL Connection ----------------
-try:
-    conn = mysql.connector.connect(
-        host="mydb-india.c5mmu4oakvas.ap-south-1.rds.amazonaws.com",
-        user="admin",
-        password="38093809Rr",
-        database="canteen_inventory1",
-        auth_plugin='mysql_native_password',   # <- explicitly set plugin
-        use_pure=True,
-        connection_timeout=5
-    )
-    cursor = conn.cursor(dictionary=True)
-    print("Database connected successfully!")
-except Exception as e:
-    print("Warning: Database connection failed!", e)
-    conn = None
-    cursor = None
+def create_connection():
+    """Establish and return a MySQL connection with retry logic."""
+    attempt = 0
+    while attempt < 3:  # Try 3 times before failing
+        try:
+            conn = mysql.connector.connect(
+                host="mydb-india.c5mmu4oakvas.ap-south-1.rds.amazonaws.com",
+                user="admin",
+                password="38093809Rr",
+                database="canteen_inventory1",
+                auth_plugin='mysql_native_password',
+                use_pure=True,
+                connection_timeout=10,     # safer timeout (5 is too low)
+                ssl_disabled=True,         # disable SSL if using http hosting
+                pool_name="main_pool",     # optional: create pool
+                pool_size=5
+            )
+            if conn.is_connected():
+                print("✅ Database connected successfully!")
+                return conn
+        except Error as e:
+            attempt += 1
+            print(f"⚠️ Attempt {attempt}: Database connection failed:", e)
+            time.sleep(3)
+
+    print("❌ Database unavailable after 3 attempts.")
+    return None
+
+
+# ---------------- Use connection safely ----------------
+conn = create_connection()
+cursor = None
+
+if conn:
+    try:
+        cursor = conn.cursor(dictionary=True)
+    except Error as e:
+        print("⚠️ Cursor creation failed:", e)
 
 
 # ---------------- Helper Functions ----------------
